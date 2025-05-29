@@ -7,7 +7,7 @@
 
 ---
 
-### Installation
+### Start
 
 1. **Clone the repository:**
 2. **Do npm install**
