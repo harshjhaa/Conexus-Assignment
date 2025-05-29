@@ -1,0 +1,11 @@
+.board {
+  padding: 1rem;
+}
+
+.columns {
+  display: flex;
+  margin-top: 1rem;
+  gap: 1rem;
+  border: 0.5px dashed black;
+  // background-color: antiquewhite;
+}
