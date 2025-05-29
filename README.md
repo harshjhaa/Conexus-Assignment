@@ -21,44 +21,6 @@ This document outlines the Low-Level Design (LLD) for the **Collaborative Task M
 
 ---
 
-## Folder Structure
-
-src/
-├─ components/ # Presentational and drag/drop-enabled UI
-│ ├─ TaskCard.tsx
-│ ├─ TaskCard.module.scss
-│ ├─ TaskColumn.tsx
-│ ├─ TaskColumn.module.scss
-│ ├─ TaskForm.tsx
-│ └─ index.module.scss
-│
-├─ hooks/
-│ └─ useTask.ts
-│
-├─ pages/
-│ ├─ TaskBoard.tsx
-│ └─ TaskBoard.module.scss
-│
-├─ routes/
-│ └─ index.tsx
-│
-├─ stores/
-│ └─ taskStore.ts
-│
-├─ types/
-│ └─ types.ts
-│
-├─ styles/
-│ └─ global.scss
-│
-├─ App.tsx
-├─ index.tsx
-└─ global.d.ts
-
-
-
----
-
 ## 1. Data Model
 
 **File:** `types/types.ts`
