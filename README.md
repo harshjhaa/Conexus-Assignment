@@ -1,158 +1,186 @@
-Collaborative Task Manager
+# Collaborative Task Manager – Low-Level Design Guide
 
-Overview
+## Overview
 
-This document outlines the Low-Level Design (LLD) of the Collaborative Task Manager built with React, TypeScript, Zustand, React Router DOM, Ant Design, SCSS, and React DnD (HTML5 backend). The app allows users to create, read, update, delete, and drag‑and‑drop tasks across status columns.
+This document outlines the Low-Level Design (LLD) for the **Collaborative Task Manager**. Built using **React**, **TypeScript**, and modern tooling, this application allows users to create, read, update, delete, and drag-and-drop tasks across various status columns.
 
-Tech Stack
+---
 
-Framework: React (with Vite bundler)
+## Tech Stack
 
-Language: TypeScript
+| Category            | Technology                    |
+|---------------------|-------------------------------|
+| Framework           | React (Vite bundler)          |
+| Language            | TypeScript                    |
+| Routing             | React Router DOM              |
+| State Management    | Zustand                       |
+| UI Library          | Ant Design                    |
+| Forms & Validation  | Antd Form                     |
+| Drag & Drop         | React DnD (HTML5 backend)     |
+| Styling             | SCSS Modules                  |
 
-Routing: React Router DOM
+---
 
-State Management: Zustand
-
-UI Library: Ant Design
-
-Forms & Validation: Antd Form (built‑in validation)
-
-Drag & Drop: React DnD & HTML5 Backend
-
-Styling: SCSS modules
-
-Folder Structure
+## Folder Structure
 
 src/
-├─ components/        # Presentational and drag/drop-enabled UI
-│  ├─ TaskCard.tsx
-│  ├─ TaskCard.module.scss
-│  ├─ TaskColumn.tsx
-│  ├─ TaskColumn.module.scss
-│  ├─ TaskForm.tsx
-│  └─ index.module.scss
+├─ components/ # Presentational and drag/drop-enabled UI
+│ ├─ TaskCard.tsx
+│ ├─ TaskCard.module.scss
+│ ├─ TaskColumn.tsx
+│ ├─ TaskColumn.module.scss
+│ ├─ TaskForm.tsx
+│ └─ index.module.scss
 │
 ├─ hooks/
-│  └─ useTask.ts      # Encapsulates Zustand selectors and actions
+│ └─ useTask.ts
 │
 ├─ pages/
-│  ├─ TaskBoard.tsx
-│  └─ TaskBoard.module.scss
+│ ├─ TaskBoard.tsx
+│ └─ TaskBoard.module.scss
 │
 ├─ routes/
-│  └─ index.tsx       # Route definitions
+│ └─ index.tsx
 │
 ├─ stores/
-│  └─ taskStore.ts    # Zustand store with CRUD actions
+│ └─ taskStore.ts
 │
 ├─ types/
-│  └─ types.ts        # Task interface
+│ └─ types.ts
 │
 ├─ styles/
-│  └─ global.scss     # Global resets and base styles
+│ └─ global.scss
 │
-├─ App.tsx            # Root component
-├─ index.tsx          # App entry point
-└─ global.d.ts         # SCSS module type declarations
+├─ App.tsx
+├─ index.tsx
+└─ global.d.ts
 
-Low-Level Design
 
-1. Data Model (types/types.ts)
 
-export interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  status: 'To Do' | 'In Progress' | 'Done';
-  priority: 'Low' | 'Medium' | 'High';
-  dueDate?: string;      // ISO date string
-  assignee?: string;
-}
+---
 
-2. State Management (stores/taskStore.ts)
+## 1. Data Model
 
-Store: useTaskStore holds tasks: Task[] and exposes:
+**File:** `types/types.ts`
 
-addTask(task: Omit<Task,'id'>)
+- `Task` interface:
+  - `id`: string
+  - `title`: string
+  - `description?`: string
+  - `status`: 'To Do' | 'In Progress' | 'Done'
+  - `priority`: 'Low' | 'Medium' | 'High'
+  - `dueDate?`: ISO string
+  - `assignee?`: string
 
-updateTask(task: Task)
+---
 
-deleteTask(id: string)
+## 2. State Management
 
-Uses uuid to generate unique IDs
+**File:** `stores/taskStore.ts`
 
-3. Custom Hook (hooks/useTask.ts)
+- Zustand store: `useTaskStore`
+- Holds `tasks: Task[]`
+- Actions:
+  - `addTask(task: Omit<Task, 'id'>)`
+  - `updateTask(task: Task)`
+  - `deleteTask(id: string)`
+- Uses `uuid` for generating IDs
 
-Wraps the store selectors and actions:
+---
 
-export const useTasks = () => ({
-  tasks: useTaskStore(state => state.tasks),
-  addTask: useTaskStore(state => state.addTask),
-  updateTask: useTaskStore(state => state.updateTask),
-  deleteTask: useTaskStore(state => state.deleteTask),
-});
+## 3. Custom Hook
 
-4. Routing (routes/index.tsx)
+**File:** `hooks/useTask.ts`
 
-Redirect / → /tasks
+- Wraps Zustand selectors/actions:
+  - `tasks`
+  - `addTask`
+  - `updateTask`
+  - `deleteTask`
 
-Main route /tasks renders <TaskBoard />
+---
 
-5. Pages and Components
+## 4. Routing
 
-a) TaskBoard.tsx
+**File:** `routes/index.tsx`
 
-Wraps content in <DndProvider backend={HTML5Backend}>
+- Redirect `/` to `/tasks`
+- Route `/tasks` renders `<TaskBoard />`
 
-Renders New Task button to open <TaskForm />
+---
 
-Maps over statuses to render <TaskColumn> for each
+## 5. Pages & Components
 
-Handles onSubmit, onEdit, onDelete, onStatusChange
+### a) TaskBoard
 
-b) TaskColumn.tsx
+**File:** `pages/TaskBoard.tsx`
 
-Implements React DnD drop target:
+- Uses `<DndProvider backend={HTML5Backend}>`
+- Renders:
+  - New Task button (opens modal)
+  - Task columns per status
+- Handles:
+  - Task creation, editing, deletion
+  - Status changes via drag & drop or select
 
-useDrop({ accept: 'TASK', drop: item => onStatusChange(item.id, status) })
+### b) TaskColumn
 
-Renders its column heading + filtered <TaskCard>s
+**File:** `components/TaskColumn.tsx`
 
-c) TaskCard.tsx
+- Implements drop target:
+  - `useDrop` hook
+  - Accepts type `'TASK'`
+- Renders tasks with matching status
 
-Implements React DnD drag source:
+### c) TaskCard
 
-useDrag({ type: 'TASK', item: { id: task.id } })
+**File:** `components/TaskCard.tsx`
 
-Displays task details and antd <Select> to change status manually
+- Implements drag source:
+  - `useDrag` hook
+  - Draggable task with `type: 'TASK'`
+- Shows:
+  - Title, priority, assignee, status
+  - Buttons: Edit, Delete
+  - Status change dropdown
 
-Edit & Delete buttons trigger parent callbacks
+### d) TaskForm
 
-d) TaskForm.tsx
+**File:** `components/TaskForm.tsx`
 
-Antd <Modal> with controlled open={visible}
+- Uses Ant Design `<Modal>` and `<Form>`
+- Fields:
+  - Title
+  - Description
+  - Status
+  - Priority
+  - Due Date (Day.js)
+  - Assignee
+- Initializes with `initialValues`
+- On submit, formats date as `YYYY-MM-DD`
 
-<Form> with fields: title, description, status, priority, dueDate (Day.js), assignee
+---
 
-Initializes form with initialValues on open
+## 6. Styling
 
-On submit, calls onSubmit({ id?, ...values, dueDate: values.dueDate?.format('YYYY-MM-DD') })
+- Scoped per component using `.module.scss`
+- Global styles in `styles/global.scss`
+- `global.d.ts` defines SCSS module types for TS
 
-6. Styling
+---
 
-SCSS modules isolate styles per component/page
+## 7. Drag & Drop Workflow
 
-global.scss for resets and base typography
+1. Drag starts from `TaskCard` → emits `{ id }`
+2. Drop happens on `TaskColumn` → receives drop
+3. `TaskBoard` updates task status in Zustand
+4. UI re-renders automatically
 
-global.d.ts declares SCSS module types for TypeScript
+---
 
-7. Drag & Drop Workflow
+## Design Principles
 
-Users drag a TaskCard (drag source emits { id }).
-
-Users drop onto a TaskColumn (drop target calls onStatusChange).
-
-TaskBoard updates the task’s status in the store, triggering re-render.
-
-This LLD ensures a modular, scalable structure: presentational components live under components, page‑level layout under pages, business logic in stores/hooks, and routing at the root. Drag‑and‑drop is cleanly encapsulated within the Card & Column components.
+- **Modular**: Logical separation of components, pages, hooks, stores
+- **Scalable**: Easy to add new statuses, task features
+- **Maintainable**: Clear file structure and typed data model
+- **User-Friendly**: Drag-and-drop interaction + editable form modal
