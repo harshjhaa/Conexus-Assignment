@@ -1,3 +1,20 @@
+# HOW TO RUN
+
+### Prerequisites
+
+- Node.js (v16+ recommended)
+- npm or yarn
+
+---
+
+### Installation
+
+1. **Clone the repository:**
+2. **Do npm install**
+3. **npm start**
+
+
+
 # Collaborative Task Manager – Low-Level Design Guide
 
 ## Overview
